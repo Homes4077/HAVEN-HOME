@@ -30,32 +30,64 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: var(--bg-cream); color: var(--text-dark); font-family: var(--font-sans); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    body { 
+      background-color: var(--bg-cream); 
+      color: var(--text-dark); 
+      font-family: var(--font-sans); 
+      min-height: 100vh; 
+      -webkit-font-smoothing: antialiased; 
+    }
 
     /* Announcement Bar */
     .top-bar {
       background-color: var(--brand-green);
       color: #e2d8c7;
-      padding: 10px 24px;
-      font-size: 12px;
+      padding: 10px 16px;
+      font-size: 11px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
     }
-    .top-bar-left { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-    .top-bar-right { display: flex; align-items: center; gap: 16px; font-size: 13px; }
+    .top-bar::-webkit-scrollbar { display: none; }
+    .top-bar-left { display: flex; align-items: center; gap: 8px; font-weight: 500; flex-shrink: 0; }
+    .top-bar-right { display: flex; align-items: center; gap: 12px; font-size: 12px; flex-shrink: 0; }
     .top-bar-right a { color: #e2d8c7; text-decoration: none; transition: opacity 0.2s; }
     .top-bar-right a:hover { opacity: 0.8; }
 
     /* Header Navigation */
-    header { background: #ffffff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; padding: 16px 32px; }
-    .nav-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    header { 
+      background: #ffffff; 
+      border-bottom: 1px solid var(--border-color); 
+      position: sticky; 
+      top: 0; 
+      z-index: 50; 
+      padding: 12px 16px; 
+    }
+    .nav-container { 
+      max-width: 1300px; 
+      margin: 0 auto; 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: space-between; 
+      align-items: center; 
+      gap: 12px; 
+    }
     
-    .logo-box { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-dark); }
+    .logo-box { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-dark); }
     .logo-badge {
-      width: 46px;
-      height: 46px;
+      width: 40px;
+      height: 40px;
       background: var(--brand-green);
       color: var(--brand-gold);
       border-radius: 6px;
@@ -64,19 +96,24 @@
       justify-content: center;
       font-family: var(--font-serif);
       font-weight: 700;
-      font-size: 20px;
+      font-size: 18px;
       letter-spacing: -1px;
       box-shadow: inset 0 0 0 1px rgba(204,164,98,0.3);
+      flex-shrink: 0;
     }
     .logo-text { display: flex; flex-direction: column; }
-    .logo-title { font-family: var(--font-serif); font-size: 20px; font-weight: 700; letter-spacing: 1.5px; line-height: 1; color: var(--brand-green); }
-    .logo-sub { font-size: 9px; font-weight: 600; letter-spacing: 2px; color: var(--brand-gold); text-transform: uppercase; margin-top: 4px; }
+    .logo-title { font-family: var(--font-serif); font-size: 17px; font-weight: 700; letter-spacing: 1px; line-height: 1; color: var(--brand-green); }
+    .logo-sub { font-size: 8.5px; font-weight: 600; letter-spacing: 1.5px; color: var(--brand-gold); text-transform: uppercase; margin-top: 3px; }
 
     /* Search Bar */
-    .search-box { flex: 1; max-width: 460px; position: relative; }
+    .search-box { 
+      flex: 1 1 280px; 
+      width: 100%; 
+      position: relative; 
+    }
     .search-box input {
       width: 100%;
-      padding: 10px 16px 10px 42px;
+      padding: 10px 16px 10px 38px;
       background: #f8f6f2;
       border: 1px solid var(--border-color);
       border-radius: 30px;
@@ -85,21 +122,22 @@
       transition: all 0.2s;
     }
     .search-box input:focus { background: #ffffff; border-color: var(--brand-gold); }
-    .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px; }
+    .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px; }
 
     .admin-link {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--brand-green);
       background: #ffffff;
       border: 1px solid var(--border-color);
-      padding: 8px 18px;
+      padding: 7px 14px;
       border-radius: 20px;
       text-decoration: none;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .admin-link:hover { background: var(--bg-cream); border-color: var(--brand-green); }
 
@@ -108,107 +146,146 @@
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
       display: flex;
-      justify-content: center;
-      gap: 36px;
-      padding: 12px 20px;
+      justify-content: flex-start;
+      gap: 20px;
+      padding: 12px 16px;
       font-size: 13px;
       font-weight: 600;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
     }
-    .market-nav a { color: #4b5563; text-decoration: none; transition: color 0.2s; }
+    .market-nav::-webkit-scrollbar { display: none; }
+    .market-nav a { color: #4b5563; text-decoration: none; transition: color 0.2s; flex-shrink: 0; }
     .market-nav a:hover, .market-nav a.active { color: var(--brand-green); }
 
     /* Hero Banner */
-    .hero-market { max-width: 1300px; margin: 24px auto 0; padding: 0 24px; }
+    .hero-market { max-width: 1300px; margin: 16px auto 0; padding: 0 16px; }
     .hero-card {
-      min-height: 480px;
+      min-height: auto;
       border-radius: 16px;
-      padding: 60px;
+      padding: 36px 20px;
       position: relative;
       overflow: hidden;
       color: white;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background: linear-gradient(90deg, rgba(19,38,28,0.92) 0%, rgba(28,59,43,0.75) 50%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover;
+      background: linear-gradient(180deg, rgba(19,38,28,0.95) 0%, rgba(28,59,43,0.85) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
-    .eyebrow { color: var(--brand-gold); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
-    .hero-card h1 { font-family: var(--font-serif); font-size: clamp(34px, 4.5vw, 56px); font-weight: 600; max-width: 620px; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
-    .hero-card p { max-width: 500px; color: #e5e7eb; font-size: 15px; line-height: 1.6; margin-bottom: 32px; font-weight: 400; }
-    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .eyebrow { color: var(--brand-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .hero-card h1 { font-family: var(--font-serif); font-size: clamp(26px, 5vw, 48px); font-weight: 600; max-width: 620px; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .hero-card p { max-width: 500px; color: #e5e7eb; font-size: 14px; line-height: 1.5; margin-bottom: 24px; font-weight: 400; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
     .hero-primary {
       background: var(--brand-gold);
       color: var(--brand-green);
-      padding: 12px 26px;
+      padding: 12px 20px;
       border-radius: 30px;
       text-decoration: none;
       font-size: 13px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 8px;
       transition: background 0.2s;
+      flex: 1 1 auto;
+      text-align: center;
     }
     .hero-primary:hover { background: #d8b06e; }
     .hero-secondary {
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.3);
       color: #ffffff;
-      padding: 12px 24px;
+      padding: 12px 20px;
       border-radius: 30px;
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       backdrop-filter: blur(4px);
       transition: background 0.2s;
+      flex: 1 1 auto;
+      text-align: center;
     }
     .hero-secondary:hover { background: rgba(255,255,255,0.18); }
 
     /* Trust Strip Feature Grid */
-    .trust-strip { max-width: 1300px; margin: 30px auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .trust-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: center; }
-    .trust-card i { color: var(--brand-green); font-size: 22px; width: 28px; text-align: center; }
+    .trust-strip { 
+      max-width: 1300px; 
+      margin: 20px auto 30px; 
+      padding: 0 16px; 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+      gap: 12px; 
+    }
+    .trust-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; gap: 12px; align-items: center; }
+    .trust-card i { color: var(--brand-green); font-size: 20px; width: 24px; text-align: center; flex-shrink: 0; }
     .trust-card b { display: block; font-size: 13px; color: var(--text-dark); font-weight: 700; }
     .trust-card span { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: block; }
 
     /* Main Content */
-    main { max-width: 1300px; margin: 0 auto; padding: 0 24px 60px; }
+    main { max-width: 1300px; margin: 0 auto; padding: 0 16px 40px; }
 
     /* Category Filter Section */
-    .section-header { margin-bottom: 20px; }
-    .section-tag { color: var(--brand-gold); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-    .section-title { font-family: var(--font-serif); font-size: 32px; font-weight: 600; color: var(--text-dark); margin-top: 4px; }
+    .section-header { margin-bottom: 16px; }
+    .section-tag { color: var(--brand-gold); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .section-title { font-family: var(--font-serif); font-size: clamp(22px, 4vw, 32px); font-weight: 600; color: var(--text-dark); margin-top: 4px; }
 
-    .cat-wrapper { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 30px; scrollbar-width: none; }
+    .cat-wrapper { 
+      display: flex; 
+      gap: 8px; 
+      overflow-x: auto; 
+      padding-bottom: 8px; 
+      margin-bottom: 24px; 
+      scrollbar-width: none; 
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-wrapper::-webkit-scrollbar { display: none; }
     .cat-btn {
-      padding: 10px 22px;
+      padding: 8px 16px;
       border-radius: 25px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       border: 1px solid var(--border-color);
       background: #ffffff;
       color: #4b5563;
       cursor: pointer;
       white-space: nowrap;
+      flex-shrink: 0;
       transition: all 0.2s;
     }
     .cat-btn:hover { border-color: var(--brand-green); color: var(--brand-green); }
     .cat-btn.active { background: var(--brand-green); color: #ffffff; border-color: var(--brand-green); }
 
     /* Collection Title Strip */
-    .collection-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-    .count { font-size: 12px; color: var(--text-muted); background: #ffffff; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px; font-weight: 500; }
+    .collection-head { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 8px; 
+      align-items: flex-start; 
+      margin-bottom: 20px; 
+      padding-top: 16px; 
+      border-top: 1px solid var(--border-color); 
+    }
+    .count { font-size: 11px; color: var(--text-muted); background: #ffffff; border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 20px; font-weight: 500; }
 
     /* Product Grid Layout */
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .product-grid { 
+      display: grid; 
+      grid-template-columns: repeat(2, minmax(0, 1fr)); 
+      gap: 12px; 
+    }
 
     /* Product Cards */
     .product-card {
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px solid var(--border-color);
       overflow: hidden;
       display: flex;
@@ -216,58 +293,70 @@
       justify-content: space-between;
       transition: transform 0.25s, box-shadow 0.25s;
     }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
     
-    .card-img-container { position: relative; width: 100%; height: 250px; background: #e5e7eb; overflow: hidden; }
+    .card-img-container { position: relative; width: 100%; height: 160px; background: #e5e7eb; overflow: hidden; }
     .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
     .product-card:hover .card-img-container img { transform: scale(1.03); }
     
     .card-badge {
       position: absolute;
-      top: 12px;
-      left: 12px;
+      top: 8px;
+      left: 8px;
       background: var(--brand-green);
       color: #ffffff;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 12px;
+      padding: 3px 8px;
+      border-radius: 10px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      max-width: calc(100% - 45px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .wishlist-icon {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(255,255,255,0.85);
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.9);
       color: #4b5563;
-      width: 30px;
-      height: 30px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
     }
     
-    .card-body { padding: 18px 18px 12px; }
-    .card-title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-condition { font-size: 12px; color: var(--brand-green); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .card-body { padding: 10px; }
+    .card-title { 
+      font-size: 13px; 
+      font-weight: 700; 
+      color: var(--text-dark); 
+      margin-bottom: 4px; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
+    .card-condition { font-size: 11px; color: var(--brand-green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
-    .card-footer { padding: 0 18px 18px; }
+    .card-footer { padding: 0 10px 10px; }
     .wa-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--brand-green);
       color: #ffffff;
       border: none;
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 9px 6px;
+      border-radius: 6px;
+      font-size: 11px;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
@@ -278,18 +367,18 @@
     /* Floating WhatsApp Button */
     .fab-whatsapp {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 16px;
+      right: 16px;
       background: #25d366;
       color: white;
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 6px 20px rgba(37,211,102,0.35);
+      font-size: 24px;
+      box-shadow: 0 4px 14px rgba(37,211,102,0.4);
       text-decoration: none;
       z-index: 100;
       transition: transform 0.2s;
@@ -300,41 +389,45 @@
     footer {
       background: var(--brand-green);
       color: #a3b8ac;
-      padding: 50px 24px 30px;
+      padding: 36px 16px 24px;
       border-top: 1px solid rgba(255,255,255,0.05);
     }
-    .footer-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 30px; }
     .footer-brand .logo-title { color: #ffffff; }
-    .footer-brand p { font-size: 13px; margin-top: 12px; line-height: 1.6; max-width: 320px; }
-    .footer-info h5 { color: #ffffff; font-size: 14px; margin-bottom: 12px; }
-    .footer-info p { font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .footer-bottom { max-width: 1300px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-brand p { font-size: 12px; margin-top: 10px; line-height: 1.5; max-width: 320px; }
+    .footer-info h5 { color: #ffffff; font-size: 13px; margin-bottom: 10px; }
+    .footer-info p { font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .footer-bottom { 
+      max-width: 1300px; 
+      margin: 0 auto; 
+      padding-top: 20px; 
+      border-top: 1px solid rgba(255,255,255,0.1); 
+      text-align: center; 
+      font-size: 11px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      align-items: center; 
+    }
     .footer-socials { display: flex; gap: 16px; font-size: 14px; }
     .footer-socials a { color: #a3b8ac; text-decoration: none; }
 
-    /* Mobile Responsive Adjustments */
-    @media (max-width: 900px) {
-      .trust-strip { grid-template-columns: repeat(2, 1fr); }
-      .footer-container { grid-template-columns: 1fr; gap: 24px; }
-      .hero-card { padding: 40px 28px; }
-    }
-    @media (max-width: 640px) {
-      header { padding: 12px 16px; }
-      .nav-container { flex-wrap: wrap; gap: 12px; }
-      .search-box { order: 3; max-width: 100%; width: 100%; }
-      .market-nav { justify-content: flex-start; overflow-x: auto; padding: 10px 16px; gap: 20px; }
-      .hero-market { padding: 0 12px; margin-top: 12px; }
-      .hero-card { min-height: 400px; padding: 30px 20px; border-radius: 12px; }
-      .hero-card h1 { font-size: 28px; }
-      .trust-strip { grid-template-columns: 1fr; padding: 0 12px; margin: 20px auto; }
-      main { padding: 0 12px 40px; }
-      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      .card-img-container { height: 160px; }
-      .card-body { padding: 12px; }
-      .card-footer { padding: 0 12px 12px; }
-      .card-title { font-size: 14px; }
-      .wa-btn { padding: 10px; font-size: 12px; }
-      .footer-bottom { flex-direction: column; gap: 12px; }
+    /* Desktop View Adaptations */
+    @media (min-width: 641px) {
+      .hero-card { padding: 50px; background: linear-gradient(90deg, rgba(19,38,28,0.92) 0%, rgba(28,59,43,0.75) 50%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover; }
+      .hero-actions { display: flex; width: auto; }
+      .hero-primary, .hero-secondary { flex: 0 0 auto; }
+      .collection-head { flex-direction: row; justify-content: space-between; align-items: flex-end; }
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+      .card-img-container { height: 220px; }
+      .card-body { padding: 14px; }
+      .card-footer { padding: 0 14px 14px; }
+      .card-title { font-size: 15px; }
+      .wa-btn { padding: 11px; font-size: 12px; }
+      .footer-container { grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+      .footer-bottom { flex-direction: row; justify-content: space-between; }
+      .search-box { width: auto; }
+      .fab-whatsapp { width: 56px; height: 56px; font-size: 28px; bottom: 24px; right: 24px; }
     }
   </style>
 </head>
@@ -344,7 +437,7 @@
   <div class="top-bar">
     <div class="top-bar-left">
       <i class="fa-solid fa-truck-fast"></i>
-      <span>Quality Unique Pieces Available &nbsp;|&nbsp; Ex-UK Furniture · Home Décor · Dining · Living · Outdoor</span>
+      <span>Quality Unique Pieces | Ex-UK Furniture · Home Décor · Outdoor</span>
     </div>
     <div class="top-bar-right">
       <span>Follow us</span>
@@ -365,14 +458,14 @@
         </div>
       </a>
 
+      <a href="admin.html" class="admin-link">
+        <i class="fa-solid fa-lock"></i> Admin
+      </a>
+
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search for furniture, décor, carpets...">
+        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search furniture, decor...">
       </div>
-
-      <a href="admin.html" class="admin-link">
-        <i class="fa-solid fa-lock"></i> Admin Portal
-      </a>
     </div>
   </header>
 
@@ -393,10 +486,10 @@
     <div class="hero-card">
       <span class="eyebrow">CURATED EX-UK LIVING</span>
       <h1>Timeless Pieces for Modern Homes</h1>
-      <p>Discover handpicked Ex-UK furniture, homeware and decor — selected for quality, character and the homes they are about to transform.</p>
+      <p>Handpicked Ex-UK furniture, homeware and decor — selected for quality, character, and distinctive living.</p>
       <div class="hero-actions">
         <a class="hero-primary" href="#collection">Explore Collection <i class="fa-solid fa-arrow-right"></i></a>
-        <a class="hero-secondary" href="https://wa.me/254785236144" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>
+        <a class="hero-secondary" href="https://wa.me/254785236144" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat WhatsApp</a>
       </div>
     </div>
   </section>
@@ -407,37 +500,37 @@
       <i class="fa-solid fa-gem"></i>
       <div>
         <b>Handpicked Quality</b>
-        <span>Every item is carefully selected</span>
+        <span>Carefully selected pieces</span>
       </div>
     </div>
     <div class="trust-card">
       <i class="fa-solid fa-camera"></i>
       <div>
-        <b>Actual Item Photos</b>
-        <span>See the piece before you inquire</span>
+        <b>Actual Photos</b>
+        <span>See details before buying</span>
       </div>
     </div>
     <div class="trust-card">
       <i class="fa-solid fa-truck-ramp-box"></i>
       <div>
-        <b>Direct WhatsApp Inquiry</b>
-        <span>Fast availability & price checks</span>
+        <b>Direct Inquiry</b>
+        <span>Fast stock & price checks</span>
       </div>
     </div>
     <div class="trust-card">
       <i class="fa-solid fa-shield-halved"></i>
       <div>
         <b>Trusted & Secure</b>
-        <span>Safe and straightforward</span>
+        <span>Safe & straightforward</span>
       </div>
     </div>
   </section>
 
-  <!-- Category Selection Cards -->
+  <!-- Main Marketplace Content -->
   <main>
     <div class="section-header">
       <span class="section-tag">SHOP BY CATEGORY</span>
-      <h2 class="section-title">Find Your Perfect Piece</h2>
+      <h2 class="section-title">Find Your Piece</h2>
     </div>
 
     <div class="cat-wrapper">
@@ -449,18 +542,18 @@
       <button onclick="filterCategory('Carpets & Mats')" class="cat-btn">Carpets & Rugs</button>
       <button onclick="filterCategory('General Decor')" class="cat-btn">General Decor</button>
       <button onclick="filterCategory('Cups & Mugs')" class="cat-btn">Cups & Mugs</button>
-      <button onclick="filterCategory('Cutlery')" class="cat-btn">Cutlery & Sets</button>
+      <button onclick="filterCategory('Cutlery')" class="cat-btn">Cutlery</button>
     </div>
 
-    <!-- Product Collection Grid -->
+    <!-- Product Collection Grid Header -->
     <div id="collection" class="collection-head">
       <div>
         <span class="section-tag">FEATURED COLLECTION</span>
         <h3 class="section-title">Latest Arrivals</h3>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Beautiful pieces. Limited availability.</p>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Limited availability pieces.</p>
       </div>
       <div class="count">
-        <i class="fa-solid fa-circle" style="color: #22c55e; font-size: 8px; vertical-align: middle; margin-right: 4px;"></i> Live inventory · Updated from our stockroom
+        <i class="fa-solid fa-circle" style="color: #22c55e; font-size: 7px; vertical-align: middle; margin-right: 4px;"></i> Live stock inventory
       </div>
     </div>
 
@@ -483,7 +576,7 @@
             <div class="logo-sub">Curated Ex-UK Living</div>
           </div>
         </div>
-        <p>Quality. Style. Homes.<br>Ex-UK furniture, homeware and decor for distinctive living.</p>
+        <p>Quality. Style. Homes.<br>Ex-UK furniture and decor for distinctive living.</p>
       </div>
       
       <div class="footer-info">
@@ -528,12 +621,12 @@
 
     async function fetchProducts() {
       const grid = document.getElementById("product-grid");
-      grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-muted);'>Loading collection...</div>";
+      grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px;'>Loading collection...</div>";
 
       const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
 
       if (error) {
-        grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #ef4444; padding: 60px;'>Unable to load inventory from database.</div>";
+        grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #ef4444; padding: 40px; font-size: 13px;'>Unable to load inventory from database.</div>";
         return;
       }
 
@@ -547,9 +640,9 @@
 
       if (items.length === 0) {
         grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: #ffffff; border-radius: 12px; border: 1px dashed var(--border-color); color: var(--text-muted);">
-            <i class="fa-solid fa-box-open" style="font-size: 36px; color: #d1d5db; margin-bottom: 12px;"></i>
-            <p style="font-weight: 600;">No items available in this category.</p>
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px 16px; background: #ffffff; border-radius: 12px; border: 1px dashed var(--border-color); color: var(--text-muted);">
+            <i class="fa-solid fa-box-open" style="font-size: 28px; color: #d1d5db; margin-bottom: 8px;"></i>
+            <p style="font-weight: 600; font-size: 13px;">No items available in this category.</p>
           </div>
         `;
         return;
@@ -584,7 +677,7 @@
 
             <div class="card-footer">
               <a href="${waLink}" target="_blank" class="wa-btn">
-                <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i> Inquire on WhatsApp
+                <i class="fa-brands fa-whatsapp" style="font-size: 13px;"></i> Inquire
               </a>
             </div>
           </div>
