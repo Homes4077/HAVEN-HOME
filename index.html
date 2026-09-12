@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HAVEN HOUSE CO. | Curated Ex-UK Living</title>
+  
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-cream: #f4f0eb;
+      --card-bg: #ffffff;
+      --brand-green: #1c3b2b;
+      --brand-green-hover: #132a1e;
+      --brand-gold: #cca462;
+      --brand-gold-soft: #f2e7d3;
+      --text-dark: #1b1c1e;
+      --text-muted: #6b7280;
+      --border-color: #e5dfd5;
+      --font-serif: 'Cinzel', serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-cream); color: var(--text-dark); font-family: var(--font-sans); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    /* Announcement Bar */
+    .top-bar {
+      background-color: var(--brand-green);
+      color: #e2d8c7;
+      padding: 10px 24px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .top-bar-right { display: flex; align-items: center; gap: 16px; font-size: 13px; }
+    .top-bar-right a { color: #e2d8c7; text-decoration: none; transition: opacity 0.2s; }
+    .top-bar-right a:hover { opacity: 0.8; }
+
+    /* Header Navigation */
+    header { background: #ffffff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; padding: 16px 32px; }
+    .nav-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    
+    .logo-box { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-dark); }
+    .logo-badge {
+      width: 46px;
+      height: 46px;
+      background: var(--brand-green);
+      color: var(--brand-gold);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: -1px;
+      box-shadow: inset 0 0 0 1px rgba(204,164,98,0.3);
+    }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-title { font-family: var(--font-serif); font-size: 20px; font-weight: 700; letter-spacing: 1.5px; line-height: 1; color: var(--brand-green); }
+    .logo-sub { font-size: 9px; font-weight: 600; letter-spacing: 2px; color: var(--brand-gold); text-transform: uppercase; margin-top: 4px; }
+
+    /* Search Bar */
+    .search-box { flex: 1; max-width: 460px; position: relative; }
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px 10px 42px;
+      background: #f8f6f2;
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-box input:focus { background: #ffffff; border-color: var(--brand-gold); }
+    .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px; }
+
+    .admin-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--brand-green);
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 8px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .admin-link:hover { background: var(--bg-cream); border-color: var(--brand-green); }
+
+    /* Category Navigation Menu */
+    .market-nav {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .market-nav a { color: #4b5563; text-decoration: none; transition: color 0.2s; }
+    .market-nav a:hover, .market-nav a.active { color: var(--brand-green); }
+
+    /* Hero Banner */
+    .hero-market { max-width: 1300px; margin: 24px auto 0; padding: 0 24px; }
+    .hero-card {
+      min-height: 480px;
+      border-radius: 16px;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(90deg, rgba(19,38,28,0.92) 0%, rgba(28,59,43,0.75) 50%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .eyebrow { color: var(--brand-gold); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+    .hero-card h1 { font-family: var(--font-serif); font-size: clamp(34px, 4.5vw, 56px); font-weight: 600; max-width: 620px; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .hero-card p { max-width: 500px; color: #e5e7eb; font-size: 15px; line-height: 1.6; margin-bottom: 32px; font-weight: 400; }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero-primary {
+      background: var(--brand-gold);
+      color: var(--brand-green);
+      padding: 12px 26px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+    .hero-primary:hover { background: #d8b06e; }
+    .hero-secondary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+    .hero-secondary:hover { background: rgba(255,255,255,0.18); }
+
+    /* Trust Strip Feature Grid */
+    .trust-strip { max-width: 1300px; margin: 30px auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .trust-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: center; }
+    .trust-card i { color: var(--brand-green); font-size: 22px; width: 28px; text-align: center; }
+    .trust-card b { display: block; font-size: 13px; color: var(--text-dark); font-weight: 700; }
+    .trust-card span { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: block; }
+
+    /* Main Content */
+    main { max-width: 1300px; margin: 0 auto; padding: 0 24px 60px; }
+
+    /* Category Filter Section */
+    .section-header { margin-bottom: 20px; }
+    .section-tag { color: var(--brand-gold); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .section-title { font-family: var(--font-serif); font-size: 32px; font-weight: 600; color: var(--text-dark); margin-top: 4px; }
+
+    .cat-wrapper { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 30px; scrollbar-width: none; }
+    .cat-btn {
+      padding: 10px 22px;
+      border-radius: 25px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      color: #4b5563;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .cat-btn:hover { border-color: var(--brand-green); color: var(--brand-green); }
+    .cat-btn.active { background: var(--brand-green); color: #ffffff; border-color: var(--brand-green); }
+
+    /* Collection Title Strip */
+    .collection-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+    .count { font-size: 12px; color: var(--text-muted); background: #ffffff; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px; font-weight: 500; }
+
+    /* Product Grid Layout */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+
+    /* Product Cards */
+    .product-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+    
+    .card-img-container { position: relative; width: 100%; height: 250px; background: #e5e7eb; overflow: hidden; }
+    .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .product-card:hover .card-img-container img { transform: scale(1.03); }
+    
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--brand-green);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .wishlist-icon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.85);
+      color: #4b5563;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .card-body { padding: 18px 18px 12px; }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-condition { font-size: 12px; color: var(--brand-green); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+    .card-footer { padding: 0 18px 18px; }
+    .wa-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--brand-green);
+      color: #ffffff;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .wa-btn:hover { background: var(--brand-green-hover); }
+
+    /* Floating WhatsApp Button */
+    .fab-whatsapp {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #25d366;
+      color: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 6px 20px rgba(37,211,102,0.35);
+      text-decoration: none;
+      z-index: 100;
+      transition: transform 0.2s;
+    }
+    .fab-whatsapp:hover { transform: scale(1.08); }
+
+    /* Footer */
+    footer {
+      background: var(--brand-green);
+      color: #a3b8ac;
+      padding: 50px 24px 30px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .footer-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-brand .logo-title { color: #ffffff; }
+    .footer-brand p { font-size: 13px; margin-top: 12px; line-height: 1.6; max-width: 320px; }
+    .footer-info h5 { color: #ffffff; font-size: 14px; margin-bottom: 12px; }
+    .footer-info p { font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .footer-bottom { max-width: 1300px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-socials { display: flex; gap: 16px; font-size: 14px; }
+    .footer-socials a { color: #a3b8ac; text-decoration: none; }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 900px) {
+      .trust-strip { grid-template-columns: repeat(2, 1fr); }
+      .footer-container { grid-template-columns: 1fr; gap: 24px; }
+      .hero-card { padding: 40px 28px; }
+    }
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; }
+      .nav-container { flex-wrap: wrap; gap: 12px; }
+      .search-box { order: 3; max-width: 100%; width: 100%; }
+      .market-nav { justify-content: flex-start; overflow-x: auto; padding: 10px 16px; gap: 20px; }
+      .hero-market { padding: 0 12px; margin-top: 12px; }
+      .hero-card { min-height: 400px; padding: 30px 20px; border-radius: 12px; }
+      .hero-card h1 { font-size: 28px; }
+      .trust-strip { grid-template-columns: 1fr; padding: 0 12px; margin: 20px auto; }
+      main { padding: 0 12px 40px; }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .card-img-container { height: 160px; }
+      .card-body { padding: 12px; }
+      .card-footer { padding: 0 12px 12px; }
+      .card-title { font-size: 14px; }
+      .wa-btn { padding: 10px; font-size: 12px; }
+      .footer-bottom { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <i class="fa-solid fa-truck-fast"></i>
+      <span>Quality Unique Pieces Available &nbsp;|&nbsp; Ex-UK Furniture · Home Décor · Dining · Living · Outdoor</span>
+    </div>
+    <div class="top-bar-right">
+      <span>Follow us</span>
+      <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="logo-box">
+        <div class="logo-badge">HH</div>
+        <div class="logo-text">
+          <div class="logo-title">HAVEN HOUSE</div>
+          <div class="logo-sub">Curated Ex-UK Living</div>
+        </div>
+      </a>
+
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search for furniture, décor, carpets...">
+      </div>
+
+      <a href="admin.html" class="admin-link">
+        <i class="fa-solid fa-lock"></i> Admin Portal
+      </a>
+    </div>
+  </header>
+
+  <!-- Sub-navigation Category Menu -->
+  <nav class="market-nav">
+    <a href="#collection" class="active">Home</a>
+    <a href="#collection" onclick="filterCategory('Living')">Living</a>
+    <a href="#collection" onclick="filterCategory('Dining Tables')">Dining</a>
+    <a href="#collection" onclick="filterCategory('General Decor')">Decor</a>
+    <a href="#collection" onclick="filterCategory('Lounge Umbrellas')">Outdoor</a>
+    <a href="#collection" onclick="filterCategory('Carpets & Mats')">Carpets & Rugs</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-market">
+    <div class="hero-card">
+      <span class="eyebrow">CURATED EX-UK LIVING</span>
+      <h1>Timeless Pieces for Modern Homes</h1>
+      <p>Discover handpicked Ex-UK furniture, homeware and decor — selected for quality, character and the homes they are about to transform.</p>
+      <div class="hero-actions">
+        <a class="hero-primary" href="#collection">Explore Collection <i class="fa-solid fa-arrow-right"></i></a>
+        <a class="hero-secondary" href="https://wa.me/254785236144" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Features Grid -->
+  <section class="trust-strip">
+    <div class="trust-card">
+      <i class="fa-solid fa-gem"></i>
+      <div>
+        <b>Handpicked Quality</b>
+        <span>Every item is carefully selected</span>
+      </div>
+    </div>
+    <div class="trust-card">
+      <i class="fa-solid fa-camera"></i>
+      <div>
+        <b>Actual Item Photos</b>
+        <span>See the piece before you inquire</span>
+      </div>
+    </div>
+    <div class="trust-card">
+      <i class="fa-solid fa-truck-ramp-box"></i>
+      <div>
+        <b>Direct WhatsApp Inquiry</b>
+        <span>Fast availability & price checks</span>
+      </div>
+    </div>
+    <div class="trust-card">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>
+        <b>Trusted & Secure</b>
+        <span>Safe and straightforward</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Selection Cards -->
+  <main>
+    <div class="section-header">
+      <span class="section-tag">SHOP BY CATEGORY</span>
+      <h2 class="section-title">Find Your Perfect Piece</h2>
+    </div>
+
+    <div class="cat-wrapper">
+      <button onclick="filterCategory('All')" class="cat-btn active">All Items</button>
+      <button onclick="filterCategory('Living')" class="cat-btn">Living</button>
+      <button onclick="filterCategory('Dining Tables')" class="cat-btn">Dining</button>
+      <button onclick="filterCategory('Flower Decor')" class="cat-btn">Decor</button>
+      <button onclick="filterCategory('Lounge Umbrellas')" class="cat-btn">Outdoor</button>
+      <button onclick="filterCategory('Carpets & Mats')" class="cat-btn">Carpets & Rugs</button>
+      <button onclick="filterCategory('General Decor')" class="cat-btn">General Decor</button>
+      <button onclick="filterCategory('Cups & Mugs')" class="cat-btn">Cups & Mugs</button>
+      <button onclick="filterCategory('Cutlery')" class="cat-btn">Cutlery & Sets</button>
+    </div>
+
+    <!-- Product Collection Grid -->
+    <div id="collection" class="collection-head">
+      <div>
+        <span class="section-tag">FEATURED COLLECTION</span>
+        <h3 class="section-title">Latest Arrivals</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Beautiful pieces. Limited availability.</p>
+      </div>
+      <div class="count">
+        <i class="fa-solid fa-circle" style="color: #22c55e; font-size: 8px; vertical-align: middle; margin-right: 4px;"></i> Live inventory · Updated from our stockroom
+      </div>
+    </div>
+
+    <div id="product-grid" class="product-grid"></div>
+  </main>
+
+  <!-- Floating WhatsApp Button -->
+  <a id="floating-whatsapp" href="#" target="_blank" class="fab-whatsapp" title="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="logo-box">
+          <div class="logo-badge">HH</div>
+          <div class="logo-text">
+            <div class="logo-title">HAVEN HOUSE</div>
+            <div class="logo-sub">Curated Ex-UK Living</div>
+          </div>
+        </div>
+        <p>Quality. Style. Homes.<br>Ex-UK furniture, homeware and decor for distinctive living.</p>
+      </div>
+      
+      <div class="footer-info">
+        <h5>Contact Us</h5>
+        <p><i class="fa-solid fa-phone"></i> +254 785 236 144</p>
+        <p><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</p>
+        <p><i class="fa-solid fa-location-dot"></i> Nairobi, Kenya</p>
+      </div>
+
+      <div class="footer-info">
+        <h5>Quick Links</h5>
+        <p><a href="#collection" style="color: inherit; text-decoration: none;">New Arrivals</a></p>
+        <p><a href="#collection" style="color: inherit; text-decoration: none;">Furniture Collection</a></p>
+        <p><a href="admin.html" style="color: inherit; text-decoration: none;">Admin Portal</a></p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 Haven House Co. All rights reserved.</div>
+      <div class="footer-socials">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const WHATSAPP_NUMBER = "254785236144";
+    
+    // EMBEDDED SUPABASE CREDENTIALS
+    const SUPABASE_URL = "https://hjyoerprtwbhlhganytc.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2";
+    
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let allProducts = [];
+    let selectedCategory = "All";
+
+    document.getElementById("floating-whatsapp").href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I have an inquiry about items at HAVEN HOUSE CO.")}`;
+
+    async function fetchProducts() {
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-muted);'>Loading collection...</div>";
+
+      const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
+
+      if (error) {
+        grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #ef4444; padding: 60px;'>Unable to load inventory from database.</div>";
+        return;
+      }
+
+      allProducts = data || [];
+      renderProducts(allProducts);
+    }
+
+    function renderProducts(items) {
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = "";
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: #ffffff; border-radius: 12px; border: 1px dashed var(--border-color); color: var(--text-muted);">
+            <i class="fa-solid fa-box-open" style="font-size: 36px; color: #d1d5db; margin-bottom: 12px;"></i>
+            <p style="font-weight: 600;">No items available in this category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(product => {
+        const message = 
+          `Hi! I am interested in purchasing this product from HAVEN HOUSE CO.:\n\n` +
+          `📌 Item: ${product.title}\n` +
+          `🏷️ Category: ${product.category}\n` +
+          `✨ Condition: ${product.condition}\n` +
+          `🖼️ Image: ${product.image_url}\n\n` +
+          `Is this item available and what is the final price?`;
+
+        const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+        grid.innerHTML += `
+          <div class="product-card">
+            <div>
+              <div class="card-img-container">
+                <img src="${product.image_url}" alt="${product.title}">
+                <span class="card-badge">${product.category}</span>
+                <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+              </div>
+              <div class="card-body">
+                <h4 class="card-title">${product.title}</h4>
+                <div class="card-condition">
+                  <i class="fa-solid fa-circle-check"></i> ${product.condition}
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <a href="${waLink}" target="_blank" class="wa-btn">
+                <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i> Inquire on WhatsApp
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterCategory(category) {
+      selectedCategory = category;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.innerText.toLowerCase().includes(category.toLowerCase()) || (category === "All" && btn.innerText.includes("All"))) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      applyFilters();
+    }
+
+    function handleSearch() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchVal = (document.getElementById("searchInput").value || "").toLowerCase();
+      let filtered = allProducts;
+
+      if (selectedCategory !== "All") {
+        filtered = filtered.filter(p => p.category === selectedCategory || p.category.toLowerCase().includes(selectedCategory.toLowerCase()));
+      }
+
+      if (searchVal.trim() !== "") {
+        filtered = filtered.filter(p => 
+          p.title.toLowerCase().includes(searchVal) || 
+          p.category.toLowerCase().includes(searchVal) ||
+          p.condition.toLowerCase().includes(searchVal)
+        );
+      }
+
+      renderProducts(filtered);
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>
