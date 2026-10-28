@@ -116,3 +116,11 @@ dialog{width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;marg
 .dlg img{height:auto;aspect-ratio:4/3;max-height:none}
 .dlg .acts .btn,.dlg .nav .btn{flex:1}
 }
+
+/* Fix sideways overflow on phones, keep the hero caption on one line */
+.shop{grid-template-columns:230px minmax(0,1fr)}
+.filters{min-width:0}
+.feature .ask{white-space:nowrap}
+@media(max-width:760px){
+.shop,.hero{grid-template-columns:minmax(0,1fr)}
+}
