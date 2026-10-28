@@ -1,373 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - MJ's Stockroom</title>
-  
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #f5f5f4; color: #1c1917; min-height: 100vh; padding: 20px 10px; }
-    
-    .container { max-width: 1000px; margin: 0 auto; }
-    
-    /* Top Header */
-    header { background: #064e3b; color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(6,78,59,0.15); }
-    header h1 { font-size: 20px; font-weight: 800; }
-    header p { font-size: 11px; color: #a7f3d0; margin-top: 2px; }
-    .store-btn { background: #fef3c7; color: #022c22; padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 700; text-decoration: none; }
-
-    /* Layout Grid */
-    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 768px) { .grid { grid-template-columns: 320px 1fr; } }
-
-    /* Panels */
-    .panel { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e7e5e4; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-    .panel h2 { font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 15px; }
-
-    /* Form Fields */
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 11px; font-weight: 700; color: #57534e; margin-bottom: 4px; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; font-size: 13px; border: 1px solid #d6d3d1; border-radius: 10px; outline: none; background: #fafaf9; }
-    .form-group input:focus, .form-group select:focus { border-color: #064e3b; background: white; }
-
-    .submit-btn { width: 100%; background: #064e3b; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 8px; }
-    .submit-btn:hover { background: #022c22; }
-
-    /* Active Inventory List */
-    .item-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px; border: 1px solid #e7e5e4; border-radius: 12px; margin-bottom: 10px; background: #fafaf9; }
-    .item-card img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
-    .item-info { flex: 1; overflow: hidden; }
-    .item-title { font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-sub { font-size: 11px; color: #78716c; }
-    .delete-btn { color: #dc2626; background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; }
-
-    /* Password Modal Overlay */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(12, 10, 9, 0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
-    .modal-box { background: white; width: 100%; max-width: 360px; padding: 30px 24px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-    .lock-icon { width: 50px; height: 50px; background: #ecfdf5; color: #064e3b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 15px; }
-
-
-    /* Enhanced Mobile Responsiveness */
-    @media (max-width: 767px) {
-      body { padding: 12px 10px; overflow-x: hidden; }
-      .container { width: 100%; }
-      header { padding: 15px; border-radius: 14px; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
-      header h1 { font-size: 18px; }
-      header p { font-size: 10px; }
-      header > div:last-child { display: flex; align-items: center; gap: 6px; }
-      .store-btn { padding: 8px 11px; font-size: 11px; }
-      .grid { gap: 14px; }
-      .panel { padding: 15px; border-radius: 14px; }
-      .panel h2 { font-size: 15px; }
-      .form-group input, .form-group select { min-height: 42px; font-size: 14px; }
-      .submit-btn { min-height: 44px; font-size: 14px; }
-      .item-card { padding: 9px; gap: 9px; }
-      .item-card img { width: 56px; height: 56px; flex-shrink: 0; }
-      .item-info { min-width: 0; }
-      .item-title { font-size: 12px; }
-      .item-sub { font-size: 10px; line-height: 1.4; }
-      .delete-btn { width: 38px; height: 38px; flex-shrink: 0; }
-      .modal-overlay { padding: 15px; align-items: flex-start; padding-top: 12vh; }
-      .modal-box { padding: 24px 18px; border-radius: 18px; }
-    }
-    @media (max-width: 380px) {
-      header { flex-direction: column; }
-      header > div:last-child { width: 100%; justify-content: space-between; }
-      .store-btn { flex: 1; text-align: center; }
-      .item-card img { width: 48px; height: 48px; }
-    }
-
-  
-    /* PREMIUM RESPONSIVE REDESIGN */
-    :root { --ink:#17211d; --deep:#12352a; --green:#1f5b46; --cream:#fbf7ef; --gold:#c7a35a; --muted:#6d756f; }
-    body { background: linear-gradient(180deg,#f8f5ef 0%,#ffffff 55%,#f5f2ec 100%); color:var(--ink); }
-    header, .panel, .product-card, .modal-box { border-color: rgba(18,53,42,.10); box-shadow: 0 14px 35px rgba(18,53,42,.08); }
-    .top-bar { background: linear-gradient(90deg,#102d24,#1f5b46); letter-spacing:.2px; }
-    .logo-icon { background: linear-gradient(135deg,var(--deep),var(--green)); box-shadow:0 8px 20px rgba(31,91,70,.22); }
-    .logo-title { letter-spacing:-.4px; }
-    .logo-sub { color:var(--gold); letter-spacing:1px; }
-    .hero { background: radial-gradient(circle at 15% 20%,rgba(199,163,90,.22),transparent 30%), linear-gradient(135deg,#102d24,#1f5b46 60%,#0d241d); padding:68px 20px; }
-    .hero-badge { color:#f4dfaa; border-color:rgba(244,223,170,.35); }
-    .hero h2 { font-size:clamp(28px,7vw,48px); letter-spacing:-1.2px; }
-    .hero p { font-size:14px; }
-    .cat-btn { border-radius:999px; transition:.25s ease; }
-    .cat-btn:hover { transform:translateY(-2px); border-color:var(--gold); }
-    .cat-btn.active { background:linear-gradient(135deg,var(--deep),var(--green)); color:#fff7df; box-shadow:0 8px 20px rgba(31,91,70,.18); }
-    .product-card { border-radius:22px; overflow:hidden; transition:.3s ease; background:rgba(255,255,255,.96); }
-    .product-card:hover { transform:translateY(-7px); box-shadow:0 20px 45px rgba(18,53,42,.14); }
-    .card-img-container { height:230px; }
-    .card-img-container img { transition:transform .5s ease; }
-    .product-card:hover .card-img-container img { transform:scale(1.05); }
-    .card-badge { background:rgba(18,53,42,.88); border:1px solid rgba(255,255,255,.18); padding:5px 10px; }
-    .card-title { font-size:16px; }
-    .wa-btn, .submit-btn { background:linear-gradient(135deg,var(--deep),var(--green)); border-radius:14px; box-shadow:0 8px 18px rgba(18,53,42,.15); }
-    .wa-btn:hover, .submit-btn:hover { background:linear-gradient(135deg,#0d241d,#174936); }
-    .admin-link { border-radius:999px; color:var(--deep); background:#fffaf0; border-color:rgba(199,163,90,.45); }
-    footer { background:linear-gradient(135deg,#0d1e18,#172d24); }
-    @media (max-width: 767px) {
-      body { padding-bottom:82px; }
-      header { padding:12px 14px; }
-      .nav-container { gap:12px; }
-      .search-box { order:3; flex-basis:100%; max-width:none; }
-      .logo-title { font-size:15px; }
-      .logo-sub { font-size:8px; }
-      .admin-link { padding:7px 11px; font-size:11px; }
-      .hero { padding:48px 16px; }
-      main { padding:20px 14px; }
-      .cat-wrapper { margin-left:-14px; margin-right:-14px; padding-left:14px; padding-right:14px; }
-      .product-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-      .product-card { border-radius:18px; }
-      .card-img-container { height:150px; }
-      .card-body,.card-footer { padding:12px; }
-      .card-title { font-size:13px; }
-      .card-condition { font-size:10px; }
-      .wa-btn { padding:10px 7px; font-size:11px; border-radius:11px; }
-      .fab-whatsapp { width:56px; height:56px; bottom:16px; right:16px; }
-      .container { padding:0; }
-      .grid { gap:14px; }
-      .panel { padding:16px; border-radius:18px; }
-      header h1 { font-size:17px; }
-      .item-card { align-items:flex-start; padding:9px; }
-      .item-card img { width:58px; height:58px; }
-      .delete-btn { flex:0 0 38px; width:38px; height:38px; }
-      .modal-box { padding:26px 18px; border-radius:22px; }
-    }
-    @media (max-width: 380px) {
-      .product-grid { grid-template-columns:1fr; }
-      .card-img-container { height:210px; }
-      .admin-link { font-size:0; padding:9px 11px; }
-      .admin-link i { font-size:13px; }
-    }
-
-  
-    /* PREMIUM ADMIN UI REDESIGN */
-    :root { --ink:#102019; --forest:#0b3d2e; --deep:#06261d; --cream:#f8f5ef; --gold:#c8a96b; --line:#e9e4da; }
-    body{background:radial-gradient(circle at top left,#eee4d0 0,transparent 28%),var(--cream);padding:28px 14px;color:var(--ink)}
-    .container{max-width:1100px} header{background:linear-gradient(120deg,var(--deep),var(--forest));border-radius:22px;padding:24px;box-shadow:0 18px 45px rgba(6,38,29,.18);border:1px solid rgba(200,169,107,.18)} header h1{font-size:24px;letter-spacing:-.6px}header p{color:#d6e6dd}.store-btn{background:#f5e4bd;color:var(--deep);border-radius:12px}.panel{border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 12px 35px rgba(16,32,25,.06)}.panel h2{color:var(--forest);font-size:18px}.form-group input,.form-group select{background:#fcfbf8;border-color:var(--line);padding:12px;border-radius:12px}.form-group input:focus,.form-group select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,169,107,.12)}.submit-btn{background:linear-gradient(135deg,var(--forest),#155b45);border-radius:12px;padding:13px;box-shadow:0 10px 22px rgba(11,61,46,.14)}.item-card{background:#fcfbf8;border-color:var(--line);border-radius:15px;padding:12px;transition:.2s}.item-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(16,32,25,.06)}.item-card img{width:58px;height:58px;border-radius:12px}.delete-btn{border-radius:10px}.modal-overlay{background:rgba(5,18,13,.78);backdrop-filter:blur(14px)}.modal-box{border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.35);border:1px solid rgba(200,169,107,.25)}.lock-icon{background:#f3ead9;color:var(--forest)}
-    @media(max-width:767px){body{padding:14px 10px}.container{width:100%}header{padding:18px;border-radius:18px;margin-bottom:16px;align-items:flex-start}header h1{font-size:19px}.store-btn{padding:8px 10px;font-size:11px}.grid{gap:14px}.panel{padding:18px;border-radius:16px}.form-group input,.form-group select{font-size:16px;padding:13px}.submit-btn{font-size:14px;padding:14px}.item-card{align-items:center}.item-title{font-size:13px}.modal-box{padding:28px 20px;border-radius:20px}}
-
-  
-/* HIGH-END ADMIN CONSOLE */
-body{background:radial-gradient(circle at top right,#eee4d0,transparent 35%),#f7f4ee}.container{max-width:1120px}.admin-kicker{color:#d9b46e;font-size:10px;letter-spacing:1.8px;font-weight:900;margin-bottom:5px}.panel{border-radius:22px;background:rgba(255,255,255,.92)}header{background:linear-gradient(120deg,#082b20,#0d4936);border-radius:24px;padding:26px 28px}.panel h2{letter-spacing:-.4px}.form-group label{font-size:10px;text-transform:uppercase;letter-spacing:.8px}.form-group input,.form-group select{padding:12px;border-radius:12px;background:#fbfaf7}.submit-btn{min-height:48px}.item-card{border-radius:16px;padding:12px;background:#fff}.item-card img{width:62px;height:62px;border-radius:13px}.delete-btn{width:38px;height:38px;border-radius:11px}.modal-box{border-radius:26px}.lock-icon{width:60px;height:60px;background:#f4ead6;color:#9d762d}.inventory-note{font-size:11px;color:#8a918b;margin-top:-8px;margin-bottom:16px}
-@media(max-width:767px){header{border-radius:20px;padding:20px 18px}.panel{border-radius:18px}.item-card img{width:58px;height:58px}}
-
-
-/* === PREMIUM STOCKROOM CONSOLE === */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap');
-body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#f7f3eb,#eef2ed);color:#18251e}.container{max-width:1120px}.panel{border:1px solid #e7dfd2;border-radius:22px;box-shadow:0 16px 45px rgba(20,45,30,.07)}header{background:linear-gradient(135deg,#102b20,#1e4a36);border-radius:22px;padding:26px;box-shadow:0 20px 45px rgba(13,45,31,.18)}header h1{font-family:'Playfair Display',serif;font-size:28px}.panel h2{font-family:'Playfair Display',serif;font-size:21px}.submit-btn{background:#143a2a;border-radius:12px}.form-group input,.form-group select{padding:13px;background:#fcfbf8;border-color:#e2ddd2;border-radius:12px}.item-card{padding:13px;border-radius:16px;background:#fffdf9;border-color:#e7dfd2}.item-card img{width:62px;height:62px;border-radius:12px}.delete-btn{border-radius:10px}.modal-box{border-radius:24px}.lock-icon{background:#f4ead6;color:#9a7434}@media(max-width:767px){body{padding:12px 10px}header{padding:20px;align-items:flex-start;gap:16px}header h1{font-size:24px}.panel{padding:16px;border-radius:18px}.grid{gap:14px}}
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Stock manager | Haven House Co.</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.panel h2{font-size:21px;margin-bottom:16px}
+.cols{display:grid;grid-template-columns:320px 1fr;gap:24px;padding:32px 0 56px;align-items:start}
+label{display:block;font-weight:600;font-size:14px;margin:0 0 4px}
+.f{margin-bottom:14px}
+.f input,.f select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);font:inherit;background:#fff}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row img{width:56px;height:56px;object-fit:cover;border-radius:var(--r);background:#e6e4dc}
+.row div{flex:1;min-width:0}
+.row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row small{color:var(--muted)}
+.del{background:none;border:1px solid #a3322b;color:#a3322b;border-radius:var(--r);padding:8px 12px;font:600 14px "Hanken Grotesk",sans-serif;cursor:pointer}
+.del:hover{background:#f6e4e2}
+.note{font-size:14px;margin-top:12px;min-height:21px}
+.note.err{color:#a3322b}.note.ok{color:var(--green)}
+#login{max-width:380px;margin:12vh auto;padding:0 20px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div id="login">
+  <div class="panel">
+    <h2>Sign in to manage stock</h2>
+    <form id="loginForm">
+      <div class="f"><label for="email">Email</label><input type="email" id="email" required autocomplete="username"></div>
+      <div class="f"><label for="pw">Password</label><input type="password" id="pw" required autocomplete="current-password"></div>
+      <button class="btn" type="submit" style="width:100%">Sign in</button>
+      <p class="note err" id="loginMsg" role="alert"></p>
+    </form>
+  </div>
+</div>
 
-  <!-- PASSWORD AUTHORIZATION OVERLAY -->
-  <div id="passwordModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
-      <h3 style="font-size: 18px; font-weight: 800; color: #0c0a09; margin-bottom: 6px;">Admin Authorization</h3>
-      <p style="font-size: 12px; color: #78716c; margin-bottom: 20px;">Please enter passcode to access control panel.</p>
-      
-      <form onsubmit="verifyPassword(event)">
-        <div class="form-group">
-          <input type="password" id="passcodeInput" placeholder="Enter Admin Passcode" required autofocus style="text-align: center; font-size: 15px; letter-spacing: 2px;">
-        </div>
-        <p id="errorMsg" style="color: #dc2626; font-size: 11px; margin-bottom: 10px; display: none; font-weight: 600;">Incorrect Passcode!</p>
-        <button type="submit" class="submit-btn">Unlock Dashboard</button>
+<div id="app" hidden>
+  <header class="site"><div class="wrap">
+    <span class="brand">Stock manager<small>Haven House Co.</small></span>
+    <span><a class="btn plain" href="./">View store</a> <button class="btn plain" id="out" type="button">Sign out</button></span>
+  </div></header>
+  <main class="wrap"><div class="cols">
+    <section class="panel">
+      <h2>Add an item</h2>
+      <form id="addForm">
+        <div class="f"><label for="title">Item name</label><input id="title" required placeholder="Royal Windsor teacup set"></div>
+        <div class="f"><label for="category">Category</label><select id="category">
+          <option>Dining Tables</option><option>Carpets &amp; Mats</option><option>Lounge Umbrellas</option><option>Flower Decor</option><option>General Decor</option><option>Cups &amp; Mugs</option><option>Cutlery</option></select></div>
+        <div class="f"><label for="condition">Condition</label><select id="condition">
+          <option>Ex-UK Like New</option><option>Ex-UK Gently Used</option><option>Ex-UK Brand New Boxed</option></select></div>
+        <div class="f"><label for="file">Photo</label><input type="file" id="file" accept="image/*" required></div>
+        <button class="btn" id="add" type="submit" style="width:100%">Add to store</button>
+        <p class="note" id="addMsg" role="status"></p>
       </form>
-    </div>
-  </div>
+    </section>
+    <section class="panel">
+      <h2>Items in stock</h2>
+      <div id="list"></div>
+    </section>
+  </div></main>
+</div>
 
-  <!-- MAIN ADMIN DASHBOARD -->
-  <div class="container" id="adminContent" style="display: none;">
-    <header>
-      <div>
-        <h1>Inventory Studio</h1>
-        <p>Private collection management</p>
-      </div>
-      <div>
-        <a href="index.html" class="store-btn"><i class="fa-solid fa-store"></i> View Store</a>
-        <button onclick="logoutAdmin()" title="Logout" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 12px; font-size: 12px; margin-left: 6px; cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i></button>
-      </div>
-    </header>
+<script>
+const db = supabase.createClient("https://hjyoerprtwbhlhganytc.supabase.co", "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2");
+const $ = id => document.getElementById(id);
+const say = (id, text, cls) => { $(id).textContent = text; $(id).className = "note " + (cls || ""); };
 
-    <div class="grid">
-      <!-- Upload Panel -->
-      <div class="panel">
-        <h2>Publish a New Piece</h2>
-        <form id="uploadForm">
-          <div class="form-group">
-            <label>Product Title</label>
-            <input type="text" id="title" placeholder="e.g. Royal Windsor Teacup Set" required>
-          </div>
+function show(signedIn) { $("login").hidden = signedIn; $("app").hidden = !signedIn; if (signedIn) load(); }
 
-          <div class="form-group">
-            <label>Category</label>
-            <select id="category" required>
-              <option value="Cups & Mugs">Cups & Mugs</option>
-              <option value="Cutlery">Cutlery & Sets</option>
-              <option value="Flower Decor">Flower Decor</option>
-              <option value="Dining Tables">Dining Tables</option>
-              <option value="Lounge Umbrellas">Lounge Umbrellas</option>
-              <option value="Carpets & Mats">Carpets & Mats</option>
-              <option value="General Decor">General Decor</option>
-            </select>
-          </div>
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const { error } = await db.auth.signInWithPassword({ email: $("email").value, password: $("pw").value });
+  if (error) say("loginMsg", "Sign in failed. Check the email and password.", "err"); else show(true);
+});
+$("out").onclick = async () => { await db.auth.signOut(); show(false); };
 
-          <div class="form-group">
-            <label>Condition</label>
-            <select id="condition" required>
-              <option value="Ex-UK Like New">Ex-UK Like New</option>
-              <option value="Ex-UK Gently Used">Ex-UK Gently Used</option>
-              <option value="Ex-UK Brand New Boxed">Ex-UK Brand New Boxed</option>
-            </select>
-          </div>
+$("addForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const file = $("file").files[0];
+  if (!file.type.startsWith("image/")) return say("addMsg", "Choose an image file.", "err");
+  if (file.size > 8 * 1024 * 1024) return say("addMsg", "Photo is over 8 MB. Use a smaller photo.", "err");
+  $("add").disabled = true;
+  say("addMsg", "Adding...");
+  try {
+    const name = `${Date.now()}.${file.name.split(".").pop().toLowerCase()}`;
+    const up = await db.storage.from("product-images").upload(name, file);
+    if (up.error) throw up.error;
+    const url = db.storage.from("product-images").getPublicUrl(name).data.publicUrl;
+    const ins = await db.from("products").insert([{ title: $("title").value.trim(), category: $("category").value, condition: $("condition").value, image_url: url }]);
+    if (ins.error) throw ins.error;
+    $("addForm").reset();
+    say("addMsg", "Added to store.", "ok");
+    load();
+  } catch (err) {
+    say("addMsg", "Could not add the item: " + err.message, "err");
+  } finally { $("add").disabled = false; }
+});
 
-          <div class="form-group">
-            <label>Product Photo</label>
-            <input type="file" id="imageFile" accept="image/*" required>
-          </div>
+async function load() {
+  const { data, error } = await db.from("products").select("*").order("id", { ascending: false });
+  const box = $("list");
+  box.replaceChildren();
+  if (error) { box.textContent = "Could not load items: " + error.message; return; }
+  if (!data.length) { box.textContent = "No items yet. Add the first one."; return; }
+  data.forEach(p => {
+    const img = Object.assign(document.createElement("img"), { src: p.image_url, alt: "" });
+    const info = document.createElement("div");
+    const b = document.createElement("b"); b.textContent = p.title;
+    const s = document.createElement("small"); s.textContent = `${p.category}, ${p.condition}`;
+    info.append(b, s);
+    const del = Object.assign(document.createElement("button"), { className: "del", type: "button", textContent: "Delete" });
+    del.onclick = () => remove(p);
+    const row = document.createElement("div"); row.className = "row";
+    row.append(img, info, del);
+    box.append(row);
+  });
+}
 
-          <button type="submit" id="submitBtn" class="submit-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Product</button>
-        </form>
-      </div>
+async function remove(p) {
+  if (!confirm(`Delete "${p.title}" from the store?`)) return;
+  const { error } = await db.from("products").delete().eq("id", p.id);
+  if (error) return alert("Could not delete: " + error.message);
+  const path = (p.image_url || "").split("/product-images/")[1];
+  if (path) await db.storage.from("product-images").remove([decodeURIComponent(path)]);
+  load();
+}
 
-      <!-- Inventory List Panel -->
-      <div class="panel">
-        <h2>Current Collection</h2>
-        <div id="admin-inventory-grid"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // DEFINE YOUR PASSCODE HERE:
-    const ADMIN_PASSCODE = "jaymar"; 
-
-    // EMBEDDED SUPABASE CREDENTIALS
-    const SUPABASE_URL = "https://hjyoerprtwbhlhganytc.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2";
-
-    const { createClient } = supabase;
-    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Authentication Gate Check
-    function checkAuth() {
-      if (sessionStorage.getItem("admin_authenticated") === "true") {
-        document.getElementById("passwordModal").style.display = "none";
-        document.getElementById("adminContent").style.display = "block";
-        fetchAdminProducts();
-      }
-    }
-
-    function verifyPassword(e) {
-      e.preventDefault();
-      const input = document.getElementById("passcodeInput").value;
-      if (input === ADMIN_PASSCODE) {
-        sessionStorage.setItem("admin_authenticated", "true");
-        document.getElementById("passwordModal").style.display = "none";
-        document.getElementById("adminContent").style.display = "block";
-        fetchAdminProducts();
-      } else {
-        document.getElementById("errorMsg").style.display = "block";
-      }
-    }
-
-    function logoutAdmin() {
-      sessionStorage.removeItem("admin_authenticated");
-      location.reload();
-    }
-
-    // Upload Handler
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("submitBtn");
-      btn.disabled = true;
-      btn.innerText = "Publishing Item...";
-
-      try {
-        const title = document.getElementById("title").value;
-        const category = document.getElementById("category").value;
-        const condition = document.getElementById("condition").value;
-        const file = document.getElementById("imageFile").files[0];
-
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-
-        // Upload Image to Supabase Bucket 'product-images'
-        const { data: uploadData, error: uploadError } = await db.storage
-          .from('product-images')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        // Get Public URL of Image
-        const { data: urlData } = db.storage
-          .from('product-images')
-          .getPublicUrl(fileName);
-
-        const imageUrl = urlData.publicUrl;
-
-        // Insert Record into 'products' Table
-        const { error: dbError } = await db
-          .from('products')
-          .insert([{ title, category, condition, image_url: imageUrl }]);
-
-        if (dbError) throw dbError;
-
-        alert("Item published successfully to store!");
-        document.getElementById("uploadForm").reset();
-        fetchAdminProducts();
-      } catch (err) {
-        alert("Upload error: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Publish Product";
-      }
-    });
-
-    // Fetch Products in Admin
-    async function fetchAdminProducts() {
-      const container = document.getElementById("admin-inventory-grid");
-      container.innerHTML = "<p style='font-size:12px; color:#a8a29e;'>Loading inventory...</p>";
-
-      const { data: products, error } = await db.from('products').select('*').order('id', { ascending: false });
-
-      if (error || !products || products.length === 0) {
-        container.innerHTML = "<p style='font-size:12px; color:#a8a29e;'>No items found in stock.</p>";
-        return;
-      }
-
-      container.innerHTML = "";
-      products.forEach(p => {
-        container.innerHTML += `
-          <div class="item-card">
-            <img src="${p.image_url}" alt="${p.title}">
-            <div class="item-info">
-              <div class="item-title">${p.title}</div>
-              <div class="item-sub">${p.category} • <span style="color:#059669;">${p.condition}</span></div>
-            </div>
-            <button onclick="deleteProduct(${p.id})" class="delete-btn" title="Delete listing">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `;
-      });
-    }
-
-    async function deleteProduct(id) {
-      if (!confirm("Are you sure you want to remove this product?")) return;
-      await db.from('products').delete().eq('id', id);
-      fetchAdminProducts();
-    }
-
-    // Run auth check on page load
-    checkAuth();
-  </script>
+db.auth.getSession().then(({ data }) => show(!!data.session));
+</script>
 </body>
 </html>

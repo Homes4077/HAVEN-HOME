@@ -1,726 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HAVEN HOUSE CO. | Curated Ex-UK Living</title>
-  
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --bg-cream: #f4f0eb;
-      --card-bg: #ffffff;
-      --brand-green: #1c3b2b;
-      --brand-green-hover: #132a1e;
-      --brand-gold: #cca462;
-      --brand-gold-soft: #f2e7d3;
-      --text-dark: #1b1c1e;
-      --text-muted: #6b7280;
-      --border-color: #e5dfd5;
-      --font-serif: 'Cinzel', serif;
-      --font-sans: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    html, body {
-      overflow-x: hidden;
-      width: 100%;
-    }
-
-    body { 
-      background-color: var(--bg-cream); 
-      color: var(--text-dark); 
-      font-family: var(--font-sans); 
-      min-height: 100vh; 
-      -webkit-font-smoothing: antialiased; 
-    }
-
-    /* Announcement Bar */
-    .top-bar {
-      background-color: var(--brand-green);
-      color: #e2d8c7;
-      padding: 10px 16px;
-      font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-    }
-    .top-bar::-webkit-scrollbar { display: none; }
-    .top-bar-left { display: flex; align-items: center; gap: 8px; font-weight: 500; flex-shrink: 0; }
-    .top-bar-right { display: flex; align-items: center; gap: 12px; font-size: 12px; flex-shrink: 0; }
-    .top-bar-right a { color: #e2d8c7; text-decoration: none; transition: opacity 0.2s; }
-    .top-bar-right a:hover { opacity: 0.8; }
-
-    /* Header Navigation */
-    header { 
-      background: #ffffff; 
-      border-bottom: 1px solid var(--border-color); 
-      position: sticky; 
-      top: 0; 
-      z-index: 50; 
-      padding: 12px 16px; 
-    }
-    .nav-container { 
-      max-width: 1300px; 
-      margin: 0 auto; 
-      display: flex; 
-      flex-wrap: wrap; 
-      justify-content: space-between; 
-      align-items: center; 
-      gap: 12px; 
-    }
-    
-    .logo-box { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-dark); }
-    .logo-badge {
-      width: 40px;
-      height: 40px;
-      background: var(--brand-green);
-      color: var(--brand-gold);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-serif);
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: -1px;
-      box-shadow: inset 0 0 0 1px rgba(204,164,98,0.3);
-      flex-shrink: 0;
-    }
-    .logo-text { display: flex; flex-direction: column; }
-    .logo-title { font-family: var(--font-serif); font-size: 17px; font-weight: 700; letter-spacing: 1px; line-height: 1; color: var(--brand-green); }
-    .logo-sub { font-size: 8.5px; font-weight: 600; letter-spacing: 1.5px; color: var(--brand-gold); text-transform: uppercase; margin-top: 3px; }
-
-    /* Search Bar */
-    .search-box { 
-      flex: 1 1 280px; 
-      width: 100%; 
-      position: relative; 
-    }
-    .search-box input {
-      width: 100%;
-      padding: 10px 16px 10px 38px;
-      background: #f8f6f2;
-      border: 1px solid var(--border-color);
-      border-radius: 30px;
-      font-size: 13px;
-      outline: none;
-      transition: all 0.2s;
-    }
-    .search-box input:focus { background: #ffffff; border-color: var(--brand-gold); }
-    .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px; }
-
-    .admin-link {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--brand-green);
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      padding: 7px 14px;
-      border-radius: 20px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .admin-link:hover { background: var(--bg-cream); border-color: var(--brand-green); }
-
-    /* Category Navigation Menu */
-    .market-nav {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: flex-start;
-      gap: 20px;
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-    }
-    .market-nav::-webkit-scrollbar { display: none; }
-    .market-nav a { color: #4b5563; text-decoration: none; transition: color 0.2s; flex-shrink: 0; }
-    .market-nav a:hover, .market-nav a.active { color: var(--brand-green); }
-
-    /* Hero Banner */
-    .hero-market { max-width: 1300px; margin: 16px auto 0; padding: 0 16px; }
-    .hero-card {
-      min-height: auto;
-      border-radius: 16px;
-      padding: 36px 20px;
-      position: relative;
-      overflow: hidden;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: linear-gradient(180deg, rgba(19,38,28,0.95) 0%, rgba(28,59,43,0.85) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .eyebrow { color: var(--brand-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-    .hero-card h1 { font-family: var(--font-serif); font-size: clamp(26px, 5vw, 48px); font-weight: 600; max-width: 620px; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px; }
-    .hero-card p { max-width: 500px; color: #e5e7eb; font-size: 14px; line-height: 1.5; margin-bottom: 24px; font-weight: 400; }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .hero-primary {
-      background: var(--brand-gold);
-      color: var(--brand-green);
-      padding: 12px 20px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background 0.2s;
-      flex: 1 1 auto;
-      text-align: center;
-    }
-    .hero-primary:hover { background: #d8b06e; }
-    .hero-secondary {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #ffffff;
-      padding: 12px 20px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      backdrop-filter: blur(4px);
-      transition: background 0.2s;
-      flex: 1 1 auto;
-      text-align: center;
-    }
-    .hero-secondary:hover { background: rgba(255,255,255,0.18); }
-
-    /* Trust Strip Feature Grid */
-    .trust-strip { 
-      max-width: 1300px; 
-      margin: 20px auto 30px; 
-      padding: 0 16px; 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-      gap: 12px; 
-    }
-    .trust-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; gap: 12px; align-items: center; }
-    .trust-card i { color: var(--brand-green); font-size: 20px; width: 24px; text-align: center; flex-shrink: 0; }
-    .trust-card b { display: block; font-size: 13px; color: var(--text-dark); font-weight: 700; }
-    .trust-card span { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: block; }
-
-    /* Main Content */
-    main { max-width: 1300px; margin: 0 auto; padding: 0 16px 40px; }
-
-    /* Category Filter Section */
-    .section-header { margin-bottom: 16px; }
-    .section-tag { color: var(--brand-gold); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-    .section-title { font-family: var(--font-serif); font-size: clamp(22px, 4vw, 32px); font-weight: 600; color: var(--text-dark); margin-top: 4px; }
-
-    .cat-wrapper { 
-      display: flex; 
-      gap: 8px; 
-      overflow-x: auto; 
-      padding-bottom: 8px; 
-      margin-bottom: 24px; 
-      scrollbar-width: none; 
-      -webkit-overflow-scrolling: touch;
-    }
-    .cat-wrapper::-webkit-scrollbar { display: none; }
-    .cat-btn {
-      padding: 8px 16px;
-      border-radius: 25px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid var(--border-color);
-      background: #ffffff;
-      color: #4b5563;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    .cat-btn:hover { border-color: var(--brand-green); color: var(--brand-green); }
-    .cat-btn.active { background: var(--brand-green); color: #ffffff; border-color: var(--brand-green); }
-
-    /* Collection Title Strip */
-    .collection-head { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 8px; 
-      align-items: flex-start; 
-      margin-bottom: 20px; 
-      padding-top: 16px; 
-      border-top: 1px solid var(--border-color); 
-    }
-    .count { font-size: 11px; color: var(--text-muted); background: #ffffff; border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 20px; font-weight: 500; }
-
-    /* Product Grid Layout */
-    .product-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, minmax(0, 1fr)); 
-      gap: 12px; 
-    }
-
-    /* Product Cards */
-    .product-card {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.25s, box-shadow 0.25s;
-    }
-    .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
-    
-    .card-img-container { position: relative; width: 100%; height: 160px; background: #e5e7eb; overflow: hidden; }
-    .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-    .product-card:hover .card-img-container img { transform: scale(1.03); }
-    
-    .card-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: var(--brand-green);
-      color: #ffffff;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      max-width: calc(100% - 45px);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .wishlist-icon {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255,255,255,0.9);
-      color: #4b5563;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      cursor: pointer;
-    }
-    
-    .card-body { padding: 10px; }
-    .card-title { 
-      font-size: 13px; 
-      font-weight: 700; 
-      color: var(--text-dark); 
-      margin-bottom: 4px; 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-    }
-    .card-condition { font-size: 11px; color: var(--brand-green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
-
-    .card-footer { padding: 0 10px 10px; }
-    .wa-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--brand-green);
-      color: #ffffff;
-      border: none;
-      width: 100%;
-      padding: 9px 6px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .wa-btn:hover { background: var(--brand-green-hover); }
-
-    /* Floating WhatsApp Button */
-    .fab-whatsapp {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      background: #25d366;
-      color: white;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 4px 14px rgba(37,211,102,0.4);
-      text-decoration: none;
-      z-index: 100;
-      transition: transform 0.2s;
-    }
-    .fab-whatsapp:hover { transform: scale(1.08); }
-
-    /* Footer */
-    footer {
-      background: var(--brand-green);
-      color: #a3b8ac;
-      padding: 36px 16px 24px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    .footer-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 30px; }
-    .footer-brand .logo-title { color: #ffffff; }
-    .footer-brand p { font-size: 12px; margin-top: 10px; line-height: 1.5; max-width: 320px; }
-    .footer-info h5 { color: #ffffff; font-size: 13px; margin-bottom: 10px; }
-    .footer-info p { font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-    .footer-bottom { 
-      max-width: 1300px; 
-      margin: 0 auto; 
-      padding-top: 20px; 
-      border-top: 1px solid rgba(255,255,255,0.1); 
-      text-align: center; 
-      font-size: 11px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 12px; 
-      align-items: center; 
-    }
-    .footer-socials { display: flex; gap: 16px; font-size: 14px; }
-    .footer-socials a { color: #a3b8ac; text-decoration: none; }
-
-    /* Desktop View Adaptations */
-    @media (min-width: 641px) {
-      .hero-card { padding: 50px; background: linear-gradient(90deg, rgba(19,38,28,0.92) 0%, rgba(28,59,43,0.75) 50%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85') center/cover; }
-      .hero-actions { display: flex; width: auto; }
-      .hero-primary, .hero-secondary { flex: 0 0 auto; }
-      .collection-head { flex-direction: row; justify-content: space-between; align-items: flex-end; }
-      .product-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-      .card-img-container { height: 220px; }
-      .card-body { padding: 14px; }
-      .card-footer { padding: 0 14px 14px; }
-      .card-title { font-size: 15px; }
-      .wa-btn { padding: 11px; font-size: 12px; }
-      .footer-container { grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
-      .footer-bottom { flex-direction: row; justify-content: space-between; }
-      .search-box { width: auto; }
-      .fab-whatsapp { width: 56px; height: 56px; font-size: 28px; bottom: 24px; right: 24px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haven House Co. | Ex-UK furniture and home decor in Nairobi</title>
+<meta name="description" content="Ex-UK furniture, dining tables, rugs, tableware and home decor in Nairobi. Browse current stock and ask about price and availability on WhatsApp.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="./">Haven House Co.<small>Ex-UK furniture and decor, Nairobi</small></a>
+  <a class="btn plain" id="wa-top" href="#">WhatsApp us</a>
+</div></header>
 
-  <!-- Top Announcement Bar -->
-  <div class="top-bar">
-    <div class="top-bar-left">
-      <i class="fa-solid fa-truck-fast"></i>
-      <span>Quality Unique Pieces | Ex-UK Furniture · Home Décor · Outdoor</span>
-    </div>
-    <div class="top-bar-right">
-      <span>Follow us</span>
-      <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-      <a href="#"><i class="fa-brands fa-instagram"></i></a>
-      <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-    </div>
+<main class="wrap">
+  <section class="intro">
+    <h1>Ex-UK furniture and home decor, in stock in Nairobi</h1>
+    <p>Everything listed here is a single piece with its own photo. Pick an item, tap Ask on WhatsApp, and we reply with the price and whether it is still available.</p>
+  </section>
+
+  <div class="shop">
+    <aside class="filters" aria-label="Filter stock">
+      <input type="search" id="q" placeholder="Search by name or condition" aria-label="Search stock">
+      <ul class="cats" id="cats"></ul>
+    </aside>
+    <section aria-live="polite">
+      <p class="status" id="status">Loading stock...</p>
+      <div class="grid" id="grid"></div>
+    </section>
   </div>
+</main>
 
-  <!-- Main Navigation Header -->
-  <header>
-    <div class="nav-container">
-      <a href="#" class="logo-box">
-        <div class="logo-badge">HH</div>
-        <div class="logo-text">
-          <div class="logo-title">HAVEN HOUSE</div>
-          <div class="logo-sub">Curated Ex-UK Living</div>
-        </div>
-      </a>
+<footer class="site"><div class="wrap">
+  <div>Haven House Co., Nairobi, Kenya<br>Phone and WhatsApp: +254 785 236 144<br>&copy; 2026 Haven House Co.</div>
+  <div><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms and conditions</a></div>
+</div></footer>
 
-      <a href="admin.html" class="admin-link">
-        <i class="fa-solid fa-lock"></i> Admin
-      </a>
+<script>
+const NUMBER = "254785236144";
+const db = supabase.createClient("https://hjyoerprtwbhlhganytc.supabase.co", "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2");
+const ORDER = ["Dining Tables","Carpets & Mats","Lounge Umbrellas","Flower Decor","General Decor","Cups & Mugs","Cutlery"];
+const wa = text => `https://wa.me/${NUMBER}?text=${encodeURIComponent(text)}`;
+let all = [], cat = "All";
 
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search furniture, decor...">
-      </div>
-    </div>
-  </header>
+document.getElementById("wa-top").href = wa("Hello, I would like to ask about items at Haven House Co.");
 
-  <!-- Sub-navigation Category Menu -->
-  <nav class="market-nav">
-    <a href="#collection" class="active">Home</a>
-    <a href="#collection" onclick="filterCategory('Living')">Living</a>
-    <a href="#collection" onclick="filterCategory('Dining Tables')">Dining</a>
-    <a href="#collection" onclick="filterCategory('General Decor')">Decor</a>
-    <a href="#collection" onclick="filterCategory('Lounge Umbrellas')">Outdoor</a>
-    <a href="#collection" onclick="filterCategory('Carpets & Mats')">Carpets & Rugs</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </nav>
+function el(tag, props = {}, kids = []) {
+  const n = Object.assign(document.createElement(tag), props);
+  kids.forEach(k => n.append(k));
+  return n;
+}
 
-  <!-- Hero Section -->
-  <section class="hero-market">
-    <div class="hero-card">
-      <span class="eyebrow">CURATED EX-UK LIVING</span>
-      <h1>Timeless Pieces for Modern Homes</h1>
-      <p>Handpicked Ex-UK furniture, homeware and decor — selected for quality, character, and distinctive living.</p>
-      <div class="hero-actions">
-        <a class="hero-primary" href="#collection">Explore Collection <i class="fa-solid fa-arrow-right"></i></a>
-        <a class="hero-secondary" href="https://wa.me/254785236144" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat WhatsApp</a>
-      </div>
-    </div>
-  </section>
+function drawCats() {
+  const counts = {};
+  all.forEach(p => counts[p.category] = (counts[p.category] || 0) + 1);
+  const names = Object.keys(counts).sort((a, b) => {
+    const i = ORDER.indexOf(a), j = ORDER.indexOf(b);
+    return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || a.localeCompare(b);
+  });
+  const ul = document.getElementById("cats");
+  ul.replaceChildren();
+  [["All", all.length], ...names.map(n => [n, counts[n]])].forEach(([n, c]) => {
+    const b = el("button", { type: "button" }, [n === "All" ? "All items" : n, el("span", { textContent: c })]);
+    b.setAttribute("aria-pressed", n === cat);
+    b.onclick = () => { cat = n; drawCats(); draw(); };
+    ul.append(el("li", {}, [b]));
+  });
+}
 
-  <!-- Trust Features Grid -->
-  <section class="trust-strip">
-    <div class="trust-card">
-      <i class="fa-solid fa-gem"></i>
-      <div>
-        <b>Handpicked Quality</b>
-        <span>Carefully selected pieces</span>
-      </div>
-    </div>
-    <div class="trust-card">
-      <i class="fa-solid fa-camera"></i>
-      <div>
-        <b>Actual Photos</b>
-        <span>See details before buying</span>
-      </div>
-    </div>
-    <div class="trust-card">
-      <i class="fa-solid fa-truck-ramp-box"></i>
-      <div>
-        <b>Direct Inquiry</b>
-        <span>Fast stock & price checks</span>
-      </div>
-    </div>
-    <div class="trust-card">
-      <i class="fa-solid fa-shield-halved"></i>
-      <div>
-        <b>Trusted & Secure</b>
-        <span>Safe & straightforward</span>
-      </div>
-    </div>
-  </section>
+function draw() {
+  const term = document.getElementById("q").value.trim().toLowerCase();
+  const list = all.filter(p =>
+    (cat === "All" || p.category === cat) &&
+    (!term || `${p.title} ${p.category} ${p.condition}`.toLowerCase().includes(term)));
+  const grid = document.getElementById("grid");
+  grid.replaceChildren();
+  document.getElementById("status").textContent = `${list.length} ${list.length === 1 ? "item" : "items"}`;
+  if (!list.length) {
+    grid.append(el("p", { className: "msg", textContent: "Nothing matches. Try another category or clear the search, or message us to ask what is arriving." }));
+    return;
+  }
+  list.forEach(p => {
+    const text = `Hello, I am interested in this item from Haven House Co.\nItem: ${p.title}\nCategory: ${p.category}\nCondition: ${p.condition}\nPhoto: ${p.image_url}\nIs it still available, and what is the price?`;
+    grid.append(el("article", { className: "item" }, [
+      el("img", { src: p.image_url, alt: p.title, loading: "lazy" }),
+      el("div", {}, [el("h3", { textContent: p.title }), el("p", { textContent: `${p.category}, ${p.condition}` })]),
+      el("a", { className: "btn", href: wa(text), target: "_blank", rel: "noopener", textContent: "Ask on WhatsApp" })
+    ]));
+  });
+}
 
-  <!-- Main Marketplace Content -->
-  <main>
-    <div class="section-header">
-      <span class="section-tag">SHOP BY CATEGORY</span>
-      <h2 class="section-title">Find Your Piece</h2>
-    </div>
+document.getElementById("q").addEventListener("input", draw);
 
-    <div class="cat-wrapper">
-      <button onclick="filterCategory('All')" class="cat-btn active">All Items</button>
-      <button onclick="filterCategory('Living')" class="cat-btn">Living</button>
-      <button onclick="filterCategory('Dining Tables')" class="cat-btn">Dining</button>
-      <button onclick="filterCategory('Flower Decor')" class="cat-btn">Decor</button>
-      <button onclick="filterCategory('Lounge Umbrellas')" class="cat-btn">Outdoor</button>
-      <button onclick="filterCategory('Carpets & Mats')" class="cat-btn">Carpets & Rugs</button>
-      <button onclick="filterCategory('General Decor')" class="cat-btn">General Decor</button>
-      <button onclick="filterCategory('Cups & Mugs')" class="cat-btn">Cups & Mugs</button>
-      <button onclick="filterCategory('Cutlery')" class="cat-btn">Cutlery</button>
-    </div>
-
-    <!-- Product Collection Grid Header -->
-    <div id="collection" class="collection-head">
-      <div>
-        <span class="section-tag">FEATURED COLLECTION</span>
-        <h3 class="section-title">Latest Arrivals</h3>
-        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Limited availability pieces.</p>
-      </div>
-      <div class="count">
-        <i class="fa-solid fa-circle" style="color: #22c55e; font-size: 7px; vertical-align: middle; margin-right: 4px;"></i> Live stock inventory
-      </div>
-    </div>
-
-    <div id="product-grid" class="product-grid"></div>
-  </main>
-
-  <!-- Floating WhatsApp Button -->
-  <a id="floating-whatsapp" href="#" target="_blank" class="fab-whatsapp" title="Chat on WhatsApp">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-
-  <!-- Footer -->
-  <footer id="contact">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <div class="logo-box">
-          <div class="logo-badge">HH</div>
-          <div class="logo-text">
-            <div class="logo-title">HAVEN HOUSE</div>
-            <div class="logo-sub">Curated Ex-UK Living</div>
-          </div>
-        </div>
-        <p>Quality. Style. Homes.<br>Ex-UK furniture and decor for distinctive living.</p>
-      </div>
-      
-      <div class="footer-info">
-        <h5>Contact Us</h5>
-        <p><i class="fa-solid fa-phone"></i> +254 785 236 144</p>
-        <p><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</p>
-        <p><i class="fa-solid fa-location-dot"></i> Nairobi, Kenya</p>
-      </div>
-
-      <div class="footer-info">
-        <h5>Quick Links</h5>
-        <p><a href="#collection" style="color: inherit; text-decoration: none;">New Arrivals</a></p>
-        <p><a href="#collection" style="color: inherit; text-decoration: none;">Furniture Collection</a></p>
-        <p><a href="admin.html" style="color: inherit; text-decoration: none;">Admin Portal</a></p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div>© 2026 Haven House Co. All rights reserved.</div>
-      <div class="footer-socials">
-        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const WHATSAPP_NUMBER = "254785236144";
-    
-    // EMBEDDED SUPABASE CREDENTIALS
-    const SUPABASE_URL = "https://hjyoerprtwbhlhganytc.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2";
-    
-    const { createClient } = supabase;
-    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let allProducts = [];
-    let selectedCategory = "All";
-
-    document.getElementById("floating-whatsapp").href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I have an inquiry about items at HAVEN HOUSE CO.")}`;
-
-    async function fetchProducts() {
-      const grid = document.getElementById("product-grid");
-      grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px;'>Loading collection...</div>";
-
-      const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
-
-      if (error) {
-        grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #ef4444; padding: 40px; font-size: 13px;'>Unable to load inventory from database.</div>";
-        return;
-      }
-
-      allProducts = data || [];
-      renderProducts(allProducts);
-    }
-
-    function renderProducts(items) {
-      const grid = document.getElementById("product-grid");
-      grid.innerHTML = "";
-
-      if (items.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 40px 16px; background: #ffffff; border-radius: 12px; border: 1px dashed var(--border-color); color: var(--text-muted);">
-            <i class="fa-solid fa-box-open" style="font-size: 28px; color: #d1d5db; margin-bottom: 8px;"></i>
-            <p style="font-weight: 600; font-size: 13px;">No items available in this category.</p>
-          </div>
-        `;
-        return;
-      }
-
-      items.forEach(product => {
-        const message = 
-          `Hi! I am interested in purchasing this product from HAVEN HOUSE CO.:\n\n` +
-          `📌 Item: ${product.title}\n` +
-          `🏷️ Category: ${product.category}\n` +
-          `✨ Condition: ${product.condition}\n` +
-          `🖼️ Image: ${product.image_url}\n\n` +
-          `Is this item available and what is the final price?`;
-
-        const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-        grid.innerHTML += `
-          <div class="product-card">
-            <div>
-              <div class="card-img-container">
-                <img src="${product.image_url}" alt="${product.title}">
-                <span class="card-badge">${product.category}</span>
-                <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
-              </div>
-              <div class="card-body">
-                <h4 class="card-title">${product.title}</h4>
-                <div class="card-condition">
-                  <i class="fa-solid fa-circle-check"></i> ${product.condition}
-                </div>
-              </div>
-            </div>
-
-            <div class="card-footer">
-              <a href="${waLink}" target="_blank" class="wa-btn">
-                <i class="fa-brands fa-whatsapp" style="font-size: 13px;"></i> Inquire
-              </a>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function filterCategory(category) {
-      selectedCategory = category;
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        if (btn.innerText.toLowerCase().includes(category.toLowerCase()) || (category === "All" && btn.innerText.includes("All"))) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-      applyFilters();
-    }
-
-    function handleSearch() {
-      applyFilters();
-    }
-
-    function applyFilters() {
-      const searchVal = (document.getElementById("searchInput").value || "").toLowerCase();
-      let filtered = allProducts;
-
-      if (selectedCategory !== "All") {
-        filtered = filtered.filter(p => p.category === selectedCategory || p.category.toLowerCase().includes(selectedCategory.toLowerCase()));
-      }
-
-      if (searchVal.trim() !== "") {
-        filtered = filtered.filter(p => 
-          p.title.toLowerCase().includes(searchVal) || 
-          p.category.toLowerCase().includes(searchVal) ||
-          p.condition.toLowerCase().includes(searchVal)
-        );
-      }
-
-      renderProducts(filtered);
-    }
-
-    fetchProducts();
-  </script>
+(async () => {
+  const { data, error } = await db.from("products").select("*").order("id", { ascending: false });
+  if (error) {
+    document.getElementById("status").textContent = "";
+    document.getElementById("grid").append(el("p", { className: "msg", textContent: "Stock could not be loaded. Check your connection and reload the page." }));
+    return;
+  }
+  all = data || [];
+  drawCats();
+  draw();
+})();
+</script>
 </body>
 </html>
