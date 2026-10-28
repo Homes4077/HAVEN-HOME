@@ -19,12 +19,19 @@
 </div></header>
 
 <main class="wrap">
-  <section class="intro">
-    <h1>Ex-UK furniture and home decor, in stock in Nairobi</h1>
-    <p>Everything listed here is a single piece with its own photo. Pick an item, tap Ask on WhatsApp, and we reply with the price and whether it is still available.</p>
+  <section class="hero">
+    <div>
+      <h1>Ex-UK furniture and home decor, in stock in Nairobi</h1>
+      <p>Each piece is one of a kind and photographed as it is. Open an item, ask on WhatsApp, and we reply with the price and whether it is still available.</p>
+      <a class="btn" href="#stock">Browse the stock</a>
+    </div>
+    <figure class="feature" id="feature" hidden>
+      <div class="mosaic" id="mosaic"></div>
+      <figcaption><div><b id="fn"></b><br>Newest arrival</div><a class="ask" id="fa" target="_blank" rel="noopener">Ask on WhatsApp</a></figcaption>
+    </figure>
   </section>
 
-  <div class="shop">
+  <div class="shop" id="stock">
     <aside class="filters" aria-label="Filter stock">
       <input type="search" id="q" placeholder="Search by name or condition" aria-label="Search stock">
       <ul class="cats" id="cats"></ul>
@@ -36,6 +43,16 @@
   </div>
 </main>
 
+<dialog id="dlg" aria-labelledby="dt"><div class="dlg">
+  <img id="di" alt="">
+  <div class="info">
+    <h2 id="dt"></h2>
+    <p class="meta" id="dm"></p>
+    <div class="acts"><a class="btn" id="da" target="_blank" rel="noopener">Ask on WhatsApp</a><button class="btn plain" id="dc" type="button">Copy link</button></div>
+    <div class="nav"><button class="btn plain" id="dp" type="button">Previous</button><button class="btn plain" id="dn" type="button">Next</button><button class="btn plain" id="dx" type="button">Close</button></div>
+  </div>
+</div></dialog>
+
 <footer class="site"><div class="wrap">
   <div>Haven House Co., Nairobi, Kenya<br>Phone and WhatsApp: +254 785 236 144<br>&copy; 2026 Haven House Co.</div>
   <div><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms and conditions</a></div>
@@ -45,10 +62,12 @@
 const NUMBER = "254785236144";
 const db = supabase.createClient("https://hjyoerprtwbhlhganytc.supabase.co", "sb_publishable_dmgJAH7hliaKjaXdJIaD2w_aD0xuuG2");
 const ORDER = ["Dining Tables","Carpets & Mats","Lounge Umbrellas","Flower Decor","General Decor","Cups & Mugs","Cutlery"];
+const $ = id => document.getElementById(id);
 const wa = text => `https://wa.me/${NUMBER}?text=${encodeURIComponent(text)}`;
-let all = [], cat = "All";
+const ask = p => wa(`Hello, I am interested in this item from Haven House Co.\nItem: ${p.title}\nCategory: ${p.category}\nCondition: ${p.condition}\nPhoto: ${p.image_url}\nIs it still available, and what is the price?`);
+let all = [], shown = [], cat = "All", cur = null, pool = [];
 
-document.getElementById("wa-top").href = wa("Hello, I would like to ask about items at Haven House Co.");
+$("wa-top").href = wa("Hello, I would like to ask about items at Haven House Co.");
 
 function el(tag, props = {}, kids = []) {
   const n = Object.assign(document.createElement(tag), props);
@@ -63,7 +82,7 @@ function drawCats() {
     const i = ORDER.indexOf(a), j = ORDER.indexOf(b);
     return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || a.localeCompare(b);
   });
-  const ul = document.getElementById("cats");
+  const ul = $("cats");
   ul.replaceChildren();
   [["All", all.length], ...names.map(n => [n, counts[n]])].forEach(([n, c]) => {
     const b = el("button", { type: "button" }, [n === "All" ? "All items" : n, el("span", { textContent: c })]);
@@ -74,39 +93,89 @@ function drawCats() {
 }
 
 function draw() {
-  const term = document.getElementById("q").value.trim().toLowerCase();
-  const list = all.filter(p =>
+  const term = $("q").value.trim().toLowerCase();
+  shown = all.filter(p =>
     (cat === "All" || p.category === cat) &&
     (!term || `${p.title} ${p.category} ${p.condition}`.toLowerCase().includes(term)));
-  const grid = document.getElementById("grid");
+  const grid = $("grid");
   grid.replaceChildren();
-  document.getElementById("status").textContent = `${list.length} ${list.length === 1 ? "item" : "items"}`;
-  if (!list.length) {
+  $("status").textContent = `${shown.length} ${shown.length === 1 ? "item" : "items"}`;
+  if (!shown.length) {
     grid.append(el("p", { className: "msg", textContent: "Nothing matches. Try another category or clear the search, or message us to ask what is arriving." }));
     return;
   }
-  list.forEach(p => {
-    const text = `Hello, I am interested in this item from Haven House Co.\nItem: ${p.title}\nCategory: ${p.category}\nCondition: ${p.condition}\nPhoto: ${p.image_url}\nIs it still available, and what is the price?`;
+  shown.forEach(p => {
+    const pic = el("button", { className: "pic", type: "button", ariaLabel: `Open ${p.title}` }, [el("img", { src: p.image_url, alt: p.title, loading: "lazy" })]);
+    pic.onclick = () => view(p);
     grid.append(el("article", { className: "item" }, [
-      el("img", { src: p.image_url, alt: p.title, loading: "lazy" }),
+      pic,
       el("div", {}, [el("h3", { textContent: p.title }), el("p", { textContent: `${p.category}, ${p.condition}` })]),
-      el("a", { className: "btn", href: wa(text), target: "_blank", rel: "noopener", textContent: "Ask on WhatsApp" })
+      el("a", { className: "ask", href: ask(p), target: "_blank", rel: "noopener", textContent: "Ask on WhatsApp" })
     ]));
   });
 }
 
-document.getElementById("q").addEventListener("input", draw);
+function view(p) {
+  cur = p;
+  pool = shown.some(x => x.id === p.id) ? shown : all;
+  $("di").src = p.image_url;
+  $("di").alt = p.title;
+  $("dt").textContent = p.title;
+  $("dm").textContent = `${p.category}, ${p.condition}`;
+  $("da").href = ask(p);
+  $("dc").textContent = "Copy link";
+  history.replaceState(null, "", "#item-" + p.id);
+  if (!$("dlg").open) $("dlg").showModal();
+}
+const step = d => view(pool[(pool.indexOf(cur) + d + pool.length) % pool.length]);
+
+$("dp").onclick = () => step(-1);
+$("dn").onclick = () => step(1);
+$("dx").onclick = () => $("dlg").close();
+$("dc").onclick = () => navigator.clipboard.writeText(location.href).then(() => { $("dc").textContent = "Link copied"; }).catch(() => {});
+$("dlg").addEventListener("click", e => { if (e.target === $("dlg")) $("dlg").close(); });
+$("dlg").addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
+document.addEventListener("keydown", e => {
+  if (!$("dlg").open) return;
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+$("q").addEventListener("input", draw);
+let sx = null;
+$("di").addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+$("di").addEventListener("touchend", e => {
+  if (sx === null) return;
+  const dx = e.changedTouches[0].clientX - sx;
+  sx = null;
+  if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+});
 
 (async () => {
   const { data, error } = await db.from("products").select("*").order("id", { ascending: false });
   if (error) {
-    document.getElementById("status").textContent = "";
-    document.getElementById("grid").append(el("p", { className: "msg", textContent: "Stock could not be loaded. Check your connection and reload the page." }));
+    $("status").textContent = "";
+    $("grid").append(el("p", { className: "msg", textContent: "Stock could not be loaded. Check your connection and reload the page." }));
     return;
   }
   all = data || [];
   drawCats();
   draw();
+  if (all.length) {
+    const n = all[0], many = all.length >= 3;
+    const tile = (p, cls) => {
+      const b = el("button", { className: "pic " + cls, type: "button", ariaLabel: `Open ${p.title}` }, [el("img", { src: p.image_url, alt: p.title })]);
+      b.onclick = () => view(p);
+      return b;
+    };
+    $("mosaic").className = "mosaic" + (many ? "" : " solo");
+    $("mosaic").replaceChildren(tile(n, "big"), ...(many ? all.slice(1, 3).map(p => tile(p, "mini")) : []));
+    $("fn").textContent = n.title;
+    $("fa").href = ask(n);
+    $("feature").hidden = false;
+  }
+  const m = location.hash.match(/^#item-(\d+)$/);
+  const linked = m && all.find(p => String(p.id) === m[1]);
+  if (linked) view(linked);
 })();
 </script>
 </body>
